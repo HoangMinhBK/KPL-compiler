@@ -1,0 +1,42 @@
+(* write a program in KPL to read n integers (n <= 10) *)
+(* into array A, print the input values from last to first *)
+(* then print the maximum value of the elements *)
+
+program maximum;
+var i: integer;
+    n: integer;
+    arr: array(. 10 .) of integer;
+
+procedure readArray;
+    begin
+    n := readi;
+    for i:=1 to n Do
+        begin
+            arr(. i .) := readi; 
+        end;
+    end;
+
+function max : integer;
+    begin
+    max := -999999999;
+    for i:=1 to n do
+        begin
+            if max <= a(. i .) then
+                 max := a(. i .);
+        end;
+    end;
+
+procedure printArray;
+    var t: integer;
+    begin
+        for i:=1 to n do 
+            begin
+                t := n+1-i;
+                call writei(a(. t .));
+            end;
+    end;
+begin
+    call readArray;
+    call printArray;
+    call writei(max);
+end. 

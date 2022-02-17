@@ -1,0 +1,42 @@
+PROGRAM EXERCISE1;
+TYPE T = INTEGER;
+VAR  A : ARRAY(. 10 .) OF T;
+     AA : ARRAY (. 10 .) OF A;
+     N : INTEGER;
+     B : INTEGER;
+     
+PROCEDURE INPUT;
+VAR C : INTEGER;
+    R : INTEGER;
+BEGIN
+    N := READI;
+    FOR C := 1 TO N DO  
+    BEGIN  
+        FOR R:= 1 TO N DO
+        AA(. R .)(. C .) := READI;
+    END;
+END;
+
+FUNCTION OUTPUT : INTEGER;
+BEGIN
+    OUTPUT := 1;
+    FOR C := 1 TO N DO 
+    BEGIN   
+        FOR R:= 1 TO N DO
+        BEGIN
+            IF R > C THEN 
+                BEGIN
+                    IF AA(. R .)(. C .) !=0 THEN 
+                        OUTPUT := 0;
+                END;
+        END; 
+    END;
+END;
+    
+BEGIN
+    CALL INPUT;
+    CALL WRITEI(OUTPUT);
+END. 
+
+
+

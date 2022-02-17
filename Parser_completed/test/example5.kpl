@@ -1,0 +1,24 @@
+
+Program Ex;
+
+Var n : Integer;
+    i : Integer;
+Function P(n : Integer) : Integer;
+    Begin
+        P := n * n;
+    End;
+
+Function F(n : Integer) : Integer;
+    Begin
+        For i := 0 to n do
+            Begin
+                if i = 0 then F :=0
+                else
+                    F := i*i + F(i-1)
+            End;
+    End;
+
+Begin   
+    CALL READI(n);
+    CALL WRITEI(F(n));
+End.

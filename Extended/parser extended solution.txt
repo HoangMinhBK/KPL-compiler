@@ -1,0 +1,237 @@
+1:
+Modify file example2.kpl so that it causes the error “Invalid arguments”
+2:
+Rewrite  function compileStatement (and function compileCallSt if necessary)  in case the procedure calls do not contain the keyword CALL, i.e.  the syntax rule for procedure calls as follows:
+CallSt   ::= ProcedureIdent Arguments
+________________________________________________________________
+1:
+Modify file example2.kpl so that it causes the error “Invalid arguments”
+2:
+Block4 ::= FunDecls Block5 
+Block4 ::= Block5
+Block5 ::= ProcDecls Block6 
+Block5 ::= Block6
+FunDecls::= FunDecl FunDecls
+FunDecls::= eps
+ProcDecls::= ProcDecl  ProcDecls
+ProcDecls ::= eps
+Block6 ::= KW_BEGIN Statements KW_END
+Modify relevant functions in your parser to match the new rules
+________________________________________________________________
+1:
+Modify file example1.kpl so that it causes the error "Invalid type!"
+2:
+Rewrite  function compileStatement (and function compileCallSt if necessary)  in case the procedure calls do not contain the keyword CALL, i.e.  the syntax rule for procedure calls as follows:
+CallSt   ::= ProcedureIdent Arguments
+________________________________________________________________
+1:
+Modify file example2.kpl so that it causes the error "Invalid parameter!"
+2:
+Rewrite  function compileStatement (and function compileCallSt if necessary)  in case the procedure calls do not contain the keyword CALL, i.e.  the syntax rule for procedure calls as follows:
+CallSt   ::= ProcedureIdent Arguments
+________________________________________________________________
+1:
+Modify file example2.kpl so that it causes the error “Invalid term”
+2:
+Arguments ::= SB_LPAR Arguments1 SB_RPAR
+Arguments1 ::= Expression Arguments2
+Arguments1 ::= eps
+Arguments2::= SB_COMMA Expression Arguments2
+Arguments2::= eps
+________________________________________________________________
+1:
+Modify file example1.kpl so that it causes the error "Invalid type!"
+2:
+Rewrite  function compileStatement (and function compileCallSt if necessary)  in case the procedure calls do not contain the keyword CALL, i.e.  the syntax rule for procedure calls as follows:
+CallSt   ::= ProcedureIdent Arguments
+________________________________________________________________
+1:
+Modify file example2.kpl so that it causes the error "Invalid parameter!"
+2:
+Arguments ::= SB_LPAR Arguments1 SB_RPAR
+Arguments1 ::= Expression Arguments2
+Arguments1 ::= eps
+Arguments2::= SB_COMMA Expression Arguments2
+Arguments2::= eps
+
+````````````````````````````````````````````
+void compileArguments(){
+	eat(SB_LPAR);
+	compileArguments1();
+	eat(SB_RPAR);
+}
+
+void compileArguments1(){
+	switch(lookAhead->tokenType){
+		case TK_PLUS:
+			compileExpression();
+			compileArguments2();
+			break;
+		case TK_MINUS:	
+			compileExpression();
+			compileArguments2();
+			break;
+		default:
+			break;
+	}
+}
+
+void compileArguments2(){
+	switch(lookAhead->tokenType){
+		case SB_COMMA:
+			eat(SB_COMMA);
+			compileExpression();
+			compileArguments2();
+			break;
+		default:
+			break;
+	}
+}
+________________________________________________________________
+1:
+Modify file example2.kpl so that it causes the error “Invalid term”
+2:
+Rewrite  function compileStatement (and function compileCallSt if necessary)  in case the procedure calls do not contain the keyword CALL, i.e.  the syntax rule for procedure calls as follows:
+CallSt   ::= ProcedureIdent Arguments
+
+`````````````````````````````````````
+________________________________________________________________
+1:
+Modify file example2.kpl so that it causes the error “Invalid arguments”
+2:
+Suppose syntax of declarations in KPL follows the following rules
+Block  ::= Declarations Block2
+Declarations::= ConstDecls Declarations|TypeDecls Declarations VarDecls Declarations|SubDecls  Declarations|eps
+Constdecls  ::= KW_CONST ConstDecl ConstDecls2
+ConstDecls2::= ConstDecl ConstDecls2
+ConstDecls2::= eps
+TypeDecls ::= KW_TYPE TypeDecl TypeDecls2
+TypeDecls2 ::= TypeDecl TypeDecls2
+TypeDecls2 ::= eps
+VarDecls   ::= KW_VAR VarDecl VarDeclrs2
+VarDecls2  ::= VarDecl VarDecls
+VarDecls2  ::= eps
+SubDecls ::= FunDecl SubDecls|ProcDecls SubDecls|eps
+FunDecl ::= KW_FUNCTION TK_IDENT Params SB_COLON BasicType SB_SEMICOLON Block SB_SEMICOLON
+ProcDecl ::= KW_PROCEDURE TK_IDENT Params SB_SEMICOLON Block SB_SEMICOLON
+Block2 ::= KW_BEGIN Statements KW_END
+Modify relevant functions in your parser to match the new rules
+
+````````````````````````````````````````````````````````````````````
+Solution: 
+
+void compileBlock(){
+	compileDeclarations();
+	compileBlock2();
+}
+
+void compileConstDecls(){
+	eat(KW_CONST);
+	compileConstDecl();
+	compileConstDecls2();	
+}
+
+void compileConstDecls2(){
+	if (lookAhead->tokenType == SB_COMMA){
+		eat(SB_COMMA);
+		if (lookAhead->tokenType == KW_CONST)
+			compileConstDecl();
+			compileConstDecls2();
+	}
+}
+
+----------Similarly with TypeDecls, VarDecls
+
+void compileSubDecls(){
+	if (lookAhead->tokenType == KW_FUNCTION){
+		compileFunDecl();
+		compileSubDecls();	
+	}
+	else if (lookAhead->tokenType == KW_PROCEDURE){
+		compileProcDecl();
+		compileSubDecls();
+	}	
+	else break;
+}
+
+void compileFunDecl(){
+	eat(KW_FUNCTION);
+	eat(TK_IDENT);
+	compileParams();
+	eat(SB_COLON);
+	compileBasicType();
+	eat(SB_SEMICOLON);
+	compileBlock();
+	compile(SB_SEMICOLON);		
+}
+
+void compileProcDecl(){
+	eat(KW_PROCEDURE);
+	eat(TK_IDENT);
+	compileParams();
+	eat(SB_SEMICOLON);
+	compileBlock();
+	eat(SB_SEMICOLON);
+}
+
+void compileDeclarations(){
+	if (lookAhead->tokenType == KW_CONST){
+		compileConstDecls();
+		compileDeclarations();
+	}
+	else if (lookAhead->tokenType == KW_TYPE){
+		compileTypeDecls();
+		compileDeclarations();
+	}
+	else if (lookAhead->tokenType == KW_VAR){
+		compileVarDecls();
+		compileDeclarations();
+	}
+	else if (lookAhead->tokenType == KW_FUNCTION || lookAhead->tokenType == KW_PROCEDURE){
+		compileSubDecls();
+		compileDeclarations();
+	}
+	else break;
+}
+
+void compileBlock2(){
+	eat(KW_BEGIN);
+	compileStatements();
+	eat(KW_END);
+}
+________________________________________________________________
+1:
+Modify file example2.kpl so that it causes the error “Invalid arguments”
+2:
+Block4 ::= FunDecls Block5 
+Block4 ::= Block5
+Block5 ::= ProcDecls Block6 
+Block5 ::= Block6
+FunDecls::= FunDecl FunDecls
+FunDecls::= eps
+ProcDecls::= ProcDecl  ProcDecls
+ProcDecls ::= eps
+Block6 ::= KW_BEGIN Statements KW_END
+Modify relevant functions in your parser to match the new rules
+
+void compileBlock4() {
+  if (lookAhead->tokenType == KW_FUNCTION) {
+    compileFuncDecls();
+    compileBlock5();
+  }
+  compileBlock5();
+}
+
+void compileBlock5() {
+  if (lookAhead->tokenType == KW_PROCEDURE) {
+    compileProcDecls();
+    compileBlock6();
+  }
+  compileBlock6();
+}
+
+void compileBlock6() {
+  eat(KW_BEGIN);
+  compileStatements();
+  eat(KW_END);
+}

@@ -1,0 +1,11 @@
+PROGRAM EXERCISE2;
+VAR A: INTEGER;
+    B: INTEGER;
+    SUM: INTEGER;
+BEGIN
+    A:=10;
+    B:=15;
+    SUM := A + B;
+    CALL WRITEI(SUM);
+END.
+

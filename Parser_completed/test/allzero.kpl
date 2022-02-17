@@ -1,0 +1,17 @@
+(*Write a program that assign 0 to all elements of a *)
+(*two-dimensional 5*5 matrix*)
+
+program allzero;
+    var A : array(. 5 .) of integer;
+        AA : array(. 5 .) of A;
+        row : integer;
+        col : integer;
+    begin
+        for row:=1 to 5 do
+            begin
+                for col:=1 to 5 do
+                    begin
+                        AA(. row .)(. col .) := 0;
+                    end;
+            end; 
+    end.
